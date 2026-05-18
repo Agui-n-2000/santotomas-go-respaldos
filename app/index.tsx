@@ -1,88 +1,3 @@
-/* import { StyleSheet, Text, View } from 'react-native';
-
-export default function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
-        Indoor GIS IPST
-      </Text>
-
-      <Text style={styles.subtitle}>
-        Sistema de orientación de salas
-      </Text>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-  },
-
-  subtitle: {
-    fontSize: 16,
-    marginTop: 10,
-  },
-}); */
-
-/* import { View, Text, StyleSheet, Image } from 'react-native';
-import { salas } from '../data/salas';
-import { useState } from 'react';
-
-
-export default function HomeScreen() {
-  const [selectedSala, setSelectedSala] = useState(null);
-  
-
-  return (
-    <View style={styles.container}>
-
-      <Text style={styles.title}>
-        Indoor GIS IPST
-      </Text>
-
-      <Image
-        source={require('../assets/maps/piso1.png')}
-        style={styles.map}
-        resizeMode="contain"
-      />
-      {salas.map((sala) => (
-        <Text key={sala.id}>
-          {sala.nombre}
-         </Text>
-         
-))}
-
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-
-  map: {
-    width: '100%',
-    height: 500,
-  },
-}); */
 import { useState } from 'react';
 
 import {
@@ -94,7 +9,12 @@ import {
   ScrollView,
 } from 'react-native';
 
+import Svg, { Line } from 'react-native-svg';
+
 import { salas } from '../data/salas';
+import { grafo } from '../data/grafo';
+import { bfs } from '../algorithms/bfs';
+import { nodos } from '../data/nodos';
 
 export default function HomeScreen() {
 
@@ -105,6 +25,9 @@ export default function HomeScreen() {
       .toLowerCase()
       .includes(busqueda.toLowerCase())
   );
+
+  // Ruta fija inicial
+  const ruta = bfs(grafo, 'entrada', 'A101');
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -124,31 +47,72 @@ export default function HomeScreen() {
         onChangeText={setBusqueda}
       />
 
-      <Image
-        source={require('../assets/maps/piso1.png')}
-        style={styles.map}
-        resizeMode="contain"
-      />
+      <View style={styles.mapContainer}>
 
-      <Text style={styles.sectionTitle}>
-        Salas encontradas
+        <Image
+          source={require('../assets/maps/piso1.png')}
+          style={styles.map}
+          resizeMode="contain"
+        />
+
+        {/* RUTA SVG */}
+        <Svg
+          height="400"
+          width="100%"
+          style={StyleSheet.absoluteFill}
+        >
+
+          {ruta &&
+            ruta.slice(0, -1).map((nodo: string, index: number) => {
+
+              const siguienteNodo: string = ruta[index + 1];
+
+              return (
+                <Line
+                  key={index}
+                  x1={nodos[nodo as keyof typeof nodos].x}
+                  y1={nodos[nodo as keyof typeof nodos].y}
+                  x2={nodos[siguienteNodo as keyof typeof nodos].x}
+                  y2={nodos[siguienteNodo as keyof typeof nodos].y}
+                  stroke="red"
+                  strokeWidth="4"
+                />
+              );
+            })}
+
+        </Svg>
+
+        {/* MARCADORES */}
+        {salasFiltradas.map((sala) => (
+
+          <View
+            key={sala.id}
+            style={[
+              styles.marker,
+              {
+                left: sala.x,
+                top: sala.y,
+              },
+            ]}
+          >
+
+            <Text style={styles.markerText}>
+              📍
+            </Text>
+
+            <Text style={styles.markerLabel}>
+              {sala.nombre}
+            </Text>
+
+          </View>
+
+        ))}
+
+      </View>
+
+      <Text style={styles.routeText}>
+        Ruta: {ruta?.join(' → ')}
       </Text>
-
-      {salasFiltradas.map((sala) => (
-        <View key={sala.id} style={styles.card}>
-          <Text style={styles.roomName}>
-            {sala.nombre}
-          </Text>
-
-          <Text>
-            Piso: {sala.piso}
-          </Text>
-
-          <Text>
-            Coordenadas: ({sala.x}, {sala.y})
-          </Text>
-        </View>
-      ))}
 
     </ScrollView>
   );
@@ -181,30 +145,37 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
-  map: {
+  mapContainer: {
     width: '100%',
     height: 400,
-    marginBottom: 20,
+    position: 'relative',
   },
 
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    alignSelf: 'flex-start',
-    marginBottom: 10,
-  },
-
-  card: {
+  map: {
     width: '100%',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 10,
+    height: '100%',
   },
 
-  roomName: {
-    fontSize: 18,
+  marker: {
+    position: 'absolute',
+    alignItems: 'center',
+  },
+
+  markerText: {
+    fontSize: 24,
+  },
+
+  markerLabel: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    backgroundColor: 'white',
+    paddingHorizontal: 4,
+    borderRadius: 4,
+  },
+
+  routeText: {
+    marginTop: 20,
+    fontSize: 16,
     fontWeight: 'bold',
   },
 
