@@ -7,21 +7,16 @@ import {
   Image,
   TextInput,
   ScrollView,
-  Dimensions,
 } from 'react-native';
 
 import Svg, {
   Line,
   Circle,
+  Text as SvgText,
 } from 'react-native-svg';
 
 import { salas } from '../data/salas';
-import { grafo } from '../data/grafo';
-import { bfs } from '../algorithms/bfs';
-import { nodos } from '../data/nodos';
-
-const screenWidth =
-  Dimensions.get('window').width;
+import { rutas } from '../data/rutasPersonalizadas';
 
 export default function HomeScreen() {
 
@@ -39,11 +34,9 @@ export default function HomeScreen() {
 
   const ruta =
     salaEncontrada
-      ? bfs(
-          grafo,
-          'entrada',
-          salaEncontrada.nombre
-        )
+      ? rutas[
+          salaEncontrada.nombre as keyof typeof rutas
+        ]
       : null;
 
   return (
@@ -52,6 +45,7 @@ export default function HomeScreen() {
       contentContainerStyle={styles.container}
     >
 
+      {/* TITULO */}
       <Text style={styles.title}>
         Indoor GIS IPST
       </Text>
@@ -60,6 +54,7 @@ export default function HomeScreen() {
         Sistema de orientación de salas
       </Text>
 
+      {/* BUSCADOR */}
       <TextInput
         placeholder="Buscar sala"
         style={styles.input}
@@ -67,59 +62,41 @@ export default function HomeScreen() {
         onChangeText={setBusqueda}
       />
 
-      {/* CONTENEDOR RESPONSIVE */}
+      {/* MAPA */}
       <View style={styles.mapWrapper}>
 
         <View style={styles.mapContainer}>
 
-          {/* MAPA */}
+          {/* IMAGEN */}
           <Image
             source={require('../assets/maps/piso1.png')}
             style={styles.map}
             resizeMode="contain"
           />
 
-          {/* RUTA */}
+          {/* SVG */}
           <Svg
             width="100%"
             height="100%"
             style={styles.svgOverlay}
           >
 
+            {/* RUTA */}
             {ruta &&
               ruta.slice(0, -1).map(
-                (
-                  nodo: string,
-                  index: number
-                ) => {
+                (punto, index) => {
 
-                  const siguienteNodo =
+                  const siguiente =
                     ruta[index + 1];
 
                   return (
                     <Line
                       key={index}
-                      x1={
-                        nodos[
-                          nodo as keyof typeof nodos
-                        ].x
-                      }
-                      y1={
-                        nodos[
-                          nodo as keyof typeof nodos
-                        ].y
-                      }
-                      x2={
-                        nodos[
-                          siguienteNodo as keyof typeof nodos
-                        ].x
-                      }
-                      y2={
-                        nodos[
-                          siguienteNodo as keyof typeof nodos
-                        ].y
-                      }
-                      stroke="red"
+                      x1={punto.x}
+                      y1={punto.y}
+                      x2={siguiente.x}
+                      y2={siguiente.y}
+                      stroke="#0066ff"
                       strokeWidth="6"
                       strokeLinecap="round"
                     />
@@ -127,32 +104,39 @@ export default function HomeScreen() {
                 }
               )}
 
-            {/* NODOS */}
+            {/* PUNTOS */}
             {ruta &&
               ruta.map(
-                (
-                  nodo: string,
-                  index: number
-                ) => (
+                (punto, index) => (
 
                   <Circle
                     key={index}
-                    cx={
-                      nodos[
-                        nodo as keyof typeof nodos
-                      ].x
-                    }
-                    cy={
-                      nodos[
-                        nodo as keyof typeof nodos
-                      ].y
-                    }
+                    cx={punto.x}
+                    cy={punto.y}
                     r="8"
-                    fill="red"
+                    fill="#ff3333"
                   />
 
                 )
               )}
+
+            {/* USTED ESTA AQUI */}
+            <Circle
+              cx="500"
+              cy="470"
+              r="12"
+              fill="#00cc44"
+            />
+
+            <SvgText
+              x="440"
+              y="450"
+              fontSize="20"
+              fill="#00cc44"
+              fontWeight="bold"
+            >
+              Usted está aquí
+            </SvgText>
 
           </Svg>
 
@@ -160,10 +144,11 @@ export default function HomeScreen() {
 
       </View>
 
+      {/* TEXTO */}
       <Text style={styles.routeText}>
 
         {busqueda.length === 0
-          ? 'Busca una sala'
+          ? 'Busca ejemplo: "101", "DAE", "Biblioteca"'
           : salaEncontrada
           ? `Destino: ${salaEncontrada.nombre}`
           : 'Sala no encontrada'}
@@ -193,8 +178,8 @@ const styles = StyleSheet.create({
 
   subtitle: {
     fontSize: 16,
-    marginBottom: 25,
     color: '#666',
+    marginBottom: 25,
   },
 
   input: {
@@ -208,20 +193,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  /* NUEVO WRAPPER */
   mapWrapper: {
     width: '95%',
     alignItems: 'center',
   },
 
-  /* RESPONSIVE REAL */
   mapContainer: {
 
     width: '100%',
 
     aspectRatio: 1.7,
 
-    maxWidth: 1200,
+    maxWidth: 1400,
 
     position: 'relative',
 
@@ -248,6 +231,7 @@ const styles = StyleSheet.create({
     marginTop: 25,
     fontSize: 22,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 
 });
