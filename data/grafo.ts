@@ -4,18 +4,44 @@ export const grafo = {
 
   pasillo1: [
     'entrada',
-    'A101',
-    'A102',
-    'A103',
-    'biblioteca',
+    'pasillo2',
+    'Biblioteca',
   ],
 
-  A101: ['pasillo1'],
+  pasillo2: [
+    'pasillo1',
+    'pasillo3',
+    'Enfermeria',
+  ],
 
-  A102: ['pasillo1'],
+  pasillo3: [
+    'pasillo2',
+    'pasillo4',
+    'TNE',
+    'Psicologo',
+    'DAE',
+  ],
 
-  A103: ['pasillo1'],
+  pasillo4: [
+    'pasillo3',
+    '101',
+    '102',
+    '103',
+    '104',
+    '105',
+    
+  ],
 
-  biblioteca: ['pasillo1'],
+  '101': ['pasillo4'],
+  '102': ['pasillo4'],
+  '103': ['pasillo4'],
+  '104': ['pasillo4'],
+  '105': ['pasillo4'],
+
+  Biblioteca: ['pasillo1'],
+  DAE: ['pasillo3'],
+  Psicologo: ['pasillo3'],
+  TNE: ['pasillo3'],
+  Enfermeria: ['pasillo2'],
 
 };
