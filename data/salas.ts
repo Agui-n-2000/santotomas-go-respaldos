@@ -23,35 +23,64 @@ export const salas = [
     nombre: '104',
     piso: 1,
   },
-
   {
     id: 5,
-    nombre: 'DAE',
+    nombre: '105',
     piso: 1,
   },
 
   {
     id: 6,
-    nombre: 'Biblioteca',
+    nombre: 'DAE',
     piso: 1,
   },
 
   {
     id: 7,
-    nombre: 'Psicologo',
+    nombre: 'Biblioteca',
     piso: 1,
   },
 
   {
     id: 8,
-    nombre: 'TNE',
+    nombre: 'Psicologo',
     piso: 1,
   },
 
   {
     id: 9,
+    nombre: 'TNE',
+    piso: 1,
+  },
+
+  {
+    id: 10,
     nombre: 'Enfermeria',
     piso: 1,
   },
+
+  {
+    id: 11,
+    nombre: 'Baño Hombres',
+    piso: 1,
+  },
+
+  {
+    id: 12,
+    nombre: 'Baño Mujeres',
+    piso: 1,
+  },
+
+  {
+    id: 13,
+    nombre: 'Ascensor',
+    piso: 1,
+  },
+
+  {
+    id: 14,
+    nombre: 'laboratorio de ciencias 1',
+    piso: 1,
+  }
 
 ];
