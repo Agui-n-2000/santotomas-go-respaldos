@@ -162,16 +162,16 @@ export default function HomeScreen() {
 
           {/* USTED ESTA AQUI */}
           <Circle
-            cx={500 * scaleX}
-            cy={470 * scaleY}
+            cx={400 * scaleX}
+            cy={300 * scaleY}
             r='10'
             fill='#00cc44'
           />
 
           <SvgText
-            x={440 * scaleX}
-            y={450 * scaleY}
-            fontSize={20 * (scaleX + scaleY) / 2}
+            x={370 * scaleX}
+            y={320 * scaleY}
+            fontSize={10 * (scaleX + scaleY) / 2}
             fill='#00cc44'
             fontWeight='bold'
           >
