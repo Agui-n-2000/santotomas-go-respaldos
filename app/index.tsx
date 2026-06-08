@@ -22,7 +22,13 @@ import { rutas } from '../data/rutasPersonalizadas';
 export default function HomeScreen() {
 
   const [busqueda, setBusqueda] =
-    useState('');
+  useState('');
+
+  const [pisoActual, setPisoActual] =
+    useState(1);
+
+  const [zoom, setZoom] =
+    useState(1);
 
   const { width } =
     useWindowDimensions();
@@ -37,7 +43,7 @@ export default function HomeScreen() {
     TAMAÑO RESPONSIVE
   */
   const mapWidth =
-    width * 0.95;
+    width * 0.95 * zoom;
 
   const mapHeight =
     mapWidth * (MAP_HEIGHT / MAP_WIDTH);
@@ -70,6 +76,11 @@ export default function HomeScreen() {
         ]
       : null;
 
+      const imagenPiso =
+      pisoActual === 1
+        ? require('../assets/maps/piso1.png')
+        : require('../assets/maps/piso2.png');
+
   return (
 
     <ScrollView
@@ -90,6 +101,61 @@ export default function HomeScreen() {
         value={busqueda}
         onChangeText={setBusqueda}
       />
+      <View style={styles.floorContainer}>
+
+      <Text
+        style={[
+          styles.floorButton,
+          pisoActual === 1 &&
+          styles.floorButtonActive,
+        ]}
+        onPress={() => setPisoActual(1)}
+      >
+        Piso 1
+      </Text>
+
+      <Text
+        style={[
+          styles.floorButton,
+          pisoActual === 2 &&
+          styles.floorButtonActive,
+        ]}
+        onPress={() => setPisoActual(2)}
+      >
+        Piso 2
+      </Text>
+
+    </View>
+
+    <View style={styles.zoomContainer}>
+
+      <Text
+        style={styles.zoomButton}
+        onPress={() =>
+          setZoom((prev) =>
+            Math.max(0.5, prev - 0.2)
+          )
+        }
+      >
+        -
+      </Text>
+
+      <Text style={styles.zoomText}>
+        {zoom.toFixed(1)}x
+      </Text>
+
+      <Text
+        style={styles.zoomButton}
+        onPress={() =>
+          setZoom((prev) =>
+            Math.min(3, prev + 0.2)
+          )
+        }
+      >
+        +
+      </Text>
+
+    </View>
 
       {/* MAPA */}
       <View
@@ -104,7 +170,7 @@ export default function HomeScreen() {
 
         {/* IMAGEN */}
         <Image
-          source={require('../assets/maps/piso1.png')}
+          source={imagenPiso}
           style={styles.map}
           resizeMode='contain'
         />
@@ -255,5 +321,47 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  floorContainer: {
+  flexDirection: 'row',
+  gap: 10,
+  marginBottom: 15,
+},
+
+floorButton: {
+  backgroundColor: '#ddd',
+  paddingVertical: 10,
+  paddingHorizontal: 20,
+  borderRadius: 10,
+  fontWeight: 'bold',
+},
+
+floorButtonActive: {
+  backgroundColor: '#0066ff',
+  color: '#fff',
+},
+
+zoomContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: 15,
+  marginBottom: 20,
+},
+
+zoomButton: {
+  backgroundColor: '#0066ff',
+  color: '#fff',
+  width: 45,
+  height: 45,
+  textAlign: 'center',
+  lineHeight: 45,
+  borderRadius: 25,
+  fontSize: 24,
+  fontWeight: 'bold',
+},
+
+zoomText: {
+  fontSize: 18,
+  fontWeight: 'bold',
+},
 
 });
