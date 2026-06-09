@@ -36,8 +36,8 @@ export default function HomeScreen() {
   /*
     TAMAÑO ORIGINAL DEL PLANO
   */
-  const MAP_WIDTH = 1400;
-  const MAP_HEIGHT = 820;
+  const MAP_WIDTH = 1800;
+  const MAP_HEIGHT = 2500;
 
   /*
     TAMAÑO RESPONSIVE
@@ -92,7 +92,7 @@ export default function HomeScreen() {
       </Text>
 
       <Text style={styles.subtitle}>
-        Sistema de orientación de salas
+        Sistema de orientación de salas, laboratorios y servicios del IPST
       </Text>
 
       <TextInput
@@ -219,7 +219,7 @@ export default function HomeScreen() {
                   cx={punto.x * scaleX}
                   cy={punto.y * scaleY}
 
-                  r='7'
+                  r='10'
                   fill='#ff3333'
                 />
 
@@ -228,16 +228,16 @@ export default function HomeScreen() {
 
           {/* USTED ESTA AQUI */}
           <Circle
-            cx={400 * scaleX}
-            cy={300 * scaleY}
-            r='10'
+            cx={550 * scaleX}
+            cy={2000 * scaleY}
+            r='20'
             fill='#00cc44'
           />
 
           <SvgText
-            x={370 * scaleX}
-            y={320 * scaleY}
-            fontSize={10 * (scaleX + scaleY) / 2}
+            x={475 * scaleX}
+            y={2040 * scaleY}
+            fontSize={25 * (scaleX + scaleY) / 2}
             fill='#00cc44'
             fontWeight='bold'
           >
@@ -252,7 +252,7 @@ export default function HomeScreen() {
       <Text style={styles.routeText}>
 
         {busqueda.length === 0
-          ? 'Busca ejemplo: 101, DAE o Biblioteca'
+          ? 'Busca ejemplo: 103, DAE o Biblioteca'
           : salaEncontrada
           ? `Destino: ${salaEncontrada.nombre}`
           : 'Sala no encontrada'}
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
   map: {
     width: '100%',
     height: '100%',
-    position: 'absolute',
+    position: 'relative',
   },
 
   svgOverlay: {
