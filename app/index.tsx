@@ -1,37 +1,28 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 import {
-  View,
-  Text,
-  StyleSheet,
   Image,
-  TextInput,
   ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
   useWindowDimensions,
-} from 'react-native';
+  View,
+} from "react-native";
 
-import Svg, {
-  Line,
-  Circle,
-  Text as SvgText,
-} from 'react-native-svg';
+import { ResumableZoom } from "react-native-zoom-toolkit";
 
-import { salas } from '../data/salas';
-import { rutas } from '../data/rutasPersonalizadas';
+import Svg, { Circle, Line, Text as SvgText } from "react-native-svg";
+
+import { rutas } from "../data/rutasPersonalizadas";
+import { salas } from "../data/salas";
 
 export default function HomeScreen() {
+  const [busqueda, setBusqueda] = useState("");
 
-  const [busqueda, setBusqueda] =
-  useState('');
+  const [pisoActual, setPisoActual] = useState(1);
 
-  const [pisoActual, setPisoActual] =
-    useState(1);
-
-  const [zoom, setZoom] =
-    useState(1);
-
-  const { width } =
-    useWindowDimensions();
+  const { width } = useWindowDimensions();
 
   /*
     TAMAÑO ORIGINAL DEL PLANO
@@ -42,275 +33,219 @@ export default function HomeScreen() {
   /*
     TAMAÑO RESPONSIVE
   */
-  const mapWidth =
-    width * 0.95 * zoom;
+  const viewportHeight = Math.min(width * 1.1, 450);
 
-  const mapHeight =
-    mapWidth * (MAP_HEIGHT / MAP_WIDTH);
+  const mapHeight = viewportHeight;
+
+  const mapWidth = mapHeight * (MAP_WIDTH / MAP_HEIGHT);
 
   /*
     ESCALA
   */
-  const scaleX =
-    mapWidth / MAP_WIDTH;
+  const scaleX = mapWidth / MAP_WIDTH;
 
-  const scaleY =
-    mapHeight / MAP_HEIGHT;
+  const scaleY = mapHeight / MAP_HEIGHT;
 
   /*
     BUSQUEDA
   */
-  const busquedaNormalizada =
-    busqueda.trim().toLowerCase();
+  const busquedaNormalizada = busqueda.trim().toLowerCase();
 
   const salaEncontrada = salas.find(
-    (sala) =>
-      sala.nombre.toLowerCase() ===
-      busquedaNormalizada
+    (sala) => sala.nombre.toLowerCase() === busquedaNormalizada,
   );
 
-  const ruta =
-    salaEncontrada
-      ? rutas[
-          salaEncontrada.nombre as keyof typeof rutas
-        ]
-      : null;
+  const ruta = salaEncontrada
+    ? rutas[salaEncontrada.nombre as keyof typeof rutas]
+    : null;
 
-      const imagenPiso =
-      pisoActual === 1
-        ? require('../assets/maps/piso1.png')
-        : require('../assets/maps/piso2.png');
+  const imagenPiso =
+    pisoActual === 1
+      ? require("../assets/maps/piso1.png")
+      : require("../assets/maps/piso2.png");
 
   return (
-
     <ScrollView
       contentContainerStyle={styles.container}
+      nestedScrollEnabled={true}
     >
-
-      <Text style={styles.title}>
-        Indoor GIS IPST
-      </Text>
+      <Text style={styles.title}>Indoor GIS IPST</Text>
 
       <Text style={styles.subtitle}>
         Sistema de orientación de salas, laboratorios y servicios del IPST
       </Text>
 
       <TextInput
-        placeholder='Buscar sala'
+        placeholder="Buscar sala"
         style={styles.input}
         value={busqueda}
         onChangeText={setBusqueda}
       />
       <View style={styles.floorContainer}>
-
-      <Text
-        style={[
-          styles.floorButton,
-          pisoActual === 1 &&
-          styles.floorButtonActive,
-        ]}
-        onPress={() => setPisoActual(1)}
-      >
-        Piso 1
-      </Text>
-
-      <Text
-        style={[
-          styles.floorButton,
-          pisoActual === 2 &&
-          styles.floorButtonActive,
-        ]}
-        onPress={() => setPisoActual(2)}
-      >
-        Piso 2
-      </Text>
-
-    </View>
-
-    <View style={styles.zoomContainer}>
-
-      <Text
-        style={styles.zoomButton}
-        onPress={() =>
-          setZoom((prev) =>
-            Math.max(0.5, prev - 0.2)
-          )
-        }
-      >
-        -
-      </Text>
-
-      <Text style={styles.zoomText}>
-        {zoom.toFixed(1)}x
-      </Text>
-
-      <Text
-        style={styles.zoomButton}
-        onPress={() =>
-          setZoom((prev) =>
-            Math.min(3, prev + 0.2)
-          )
-        }
-      >
-        +
-      </Text>
-
-    </View>
-
-      {/* MAPA */}
-      <View
-        style={[
-          styles.mapContainer,
-          {
-            width: mapWidth,
-            height: mapHeight,
-          },
-        ]}
-      >
-
-        {/* IMAGEN */}
-        <Image
-          source={imagenPiso}
-          style={styles.map}
-          resizeMode='contain'
-        />
-
-        {/* SVG */}
-        <Svg
-          width={mapWidth}
-          height={mapHeight}
-          style={styles.svgOverlay}
+        <Text
+          style={[
+            styles.floorButton,
+            pisoActual === 1 && styles.floorButtonActive,
+          ]}
+          onPress={() => setPisoActual(1)}
         >
+          Piso 1
+        </Text>
 
-          {/* RUTA */}
-          {ruta &&
-            ruta.slice(0, -1).map(
-              (punto, index) => {
+        <Text
+          style={[
+            styles.floorButton,
+            pisoActual === 2 && styles.floorButtonActive,
+          ]}
+          onPress={() => setPisoActual(2)}
+        >
+          Piso 2
+        </Text>
+      </View>
+      {/* MAPA */}
+      <View style={styles.mapViewport}>
+        <ResumableZoom
+          maxScale={4}
+          minScale={1}          
+        >
+          <View
+            style={[
+              styles.mapContainer,
+              {
+                width: mapWidth,
+                height: mapHeight,
+              },
+            ]}
+          >
+          {/* Plano */}
+          {
+            <Image
+              source={imagenPiso}
+              style={styles.map}
+              resizeMode="contain"
+            />
+          }
 
-                const siguiente =
-                  ruta[index + 1];
+          {/* Capa SVG */}
+          <Svg width={mapWidth} height={mapHeight} style={styles.svgOverlay}>
+            {/* RUTA */}
+            {ruta &&
+              ruta.slice(0, -1).map((punto, index) => {
+                const siguiente = ruta[index + 1];
 
                 return (
                   <Line
                     key={index}
-
                     x1={punto.x * scaleX}
                     y1={punto.y * scaleY}
-
                     x2={siguiente.x * scaleX}
                     y2={siguiente.y * scaleY}
-
-                    stroke='#0066ff'
-                    strokeWidth='5'
-                    strokeLinecap='round'
+                    stroke="#0066ff"
+                    strokeWidth="5"
+                    strokeLinecap="round"
                   />
                 );
-              }
-            )}
+              })}
 
-          {/* PUNTOS */}
-          {ruta &&
-            ruta.map(
-              (punto, index) => (
-
+            {/* PUNTOS DE LA RUTA */}
+            {ruta &&
+              ruta.map((punto, index) => (
                 <Circle
                   key={index}
-
                   cx={punto.x * scaleX}
                   cy={punto.y * scaleY}
-
-                  r='10'
-                  fill='#ff3333'
+                  r="10"
+                  fill="#ff3333"
                 />
+              ))}
 
-              )
-            )}
+            {/* USTED ESTÁ AQUÍ */}
+            <Circle
+              cx={550 * scaleX}
+              cy={2000 * scaleY}
+              r="20"
+              fill="#00cc44"
+            />
 
-          {/* USTED ESTA AQUI */}
-          <Circle
-            cx={550 * scaleX}
-            cy={2000 * scaleY}
-            r='20'
-            fill='#00cc44'
-          />
-
-          <SvgText
-            x={475 * scaleX}
-            y={2040 * scaleY}
-            fontSize={25 * (scaleX + scaleY) / 2}
-            fill='#00cc44'
-            fontWeight='bold'
-          >
-            Usted está aquí
-          </SvgText>
-
-        </Svg>
-
+            <SvgText
+              x={475 * scaleX}
+              y={2040 * scaleY}
+              fontSize={(25 * (scaleX + scaleY)) / 2}
+              fill="#00cc44"
+              fontWeight="bold"
+            >
+              Usted está aquí
+            </SvgText>
+          </Svg>
+          </View>
+        </ResumableZoom>
       </View>
+      
 
       {/* TEXTO */}
-      <Text style={styles.routeText}>
-
+      {/* <Text style={styles.routeText}>
         {busqueda.length === 0
-          ? 'Busca ejemplo: 103, DAE o Biblioteca'
+          ? "Busca ejemplo: 103, DAE o Biblioteca"
           : salaEncontrada
-          ? `Destino: ${salaEncontrada.nombre}`
-          : 'Sala no encontrada'}
-
-      </Text>
-
+            ? `Destino: ${salaEncontrada.nombre}`
+            : "Sala no encontrada"}
+      </Text> */}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-
   container: {
     flexGrow: 1,
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
     paddingTop: 40,
     paddingBottom: 50,
   },
 
   title: {
     fontSize: 30,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
   },
 
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: "#666",
     marginBottom: 25,
   },
 
   input: {
-    width: '90%',
-    backgroundColor: '#fff',
+    width: "90%",
+    backgroundColor: "#fff",
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 15,
     padding: 15,
     marginBottom: 25,
     fontSize: 16,
   },
 
-  mapContainer: {
-    position: 'relative',
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
+ mapViewport: {
+  width: "95%",
+  height: 450,
+  backgroundColor: "#fff",
+  borderRadius: 20,
+  overflow: "hidden",
+  marginVertical: 20,
+},
 
-  map: {
-    width: '100%',
-    height: '100%',
-    position: 'relative',
-  },
+mapContainer: {
+  position: "relative",
+},
+map: {
+  width: "100%",
+  height: "100%",
+  position: "absolute",
+},
 
   svgOverlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
   },
@@ -318,50 +253,49 @@ const styles = StyleSheet.create({
   routeText: {
     marginTop: 25,
     fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
   },
   floorContainer: {
-  flexDirection: 'row',
-  gap: 10,
-  marginBottom: 15,
-},
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 15,
+  },
 
-floorButton: {
-  backgroundColor: '#ddd',
-  paddingVertical: 10,
-  paddingHorizontal: 20,
-  borderRadius: 10,
-  fontWeight: 'bold',
-},
+  floorButton: {
+    backgroundColor: "#ddd",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    fontWeight: "bold",
+  },
 
-floorButtonActive: {
-  backgroundColor: '#0066ff',
-  color: '#fff',
-},
+  floorButtonActive: {
+    backgroundColor: "#0066ff",
+    color: "#fff",
+  },
 
-zoomContainer: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 15,
-  marginBottom: 20,
-},
+  zoomContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 15,
+    marginBottom: 20,
+  },
 
-zoomButton: {
-  backgroundColor: '#0066ff',
-  color: '#fff',
-  width: 45,
-  height: 45,
-  textAlign: 'center',
-  lineHeight: 45,
-  borderRadius: 25,
-  fontSize: 24,
-  fontWeight: 'bold',
-},
+  zoomButton: {
+    backgroundColor: "#0066ff",
+    color: "#fff",
+    width: 45,
+    height: 45,
+    textAlign: "center",
+    lineHeight: 45,
+    borderRadius: 25,
+    fontSize: 24,
+    fontWeight: "bold",
+  },
 
-zoomText: {
-  fontSize: 18,
-  fontWeight: 'bold',
-},
-
+  zoomText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
 });
