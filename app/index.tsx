@@ -24,7 +24,7 @@ import { salas } from "../data/salas";
 export default function HomeScreen() {
   const [busqueda, setBusqueda] = useState("");
 
-  const [pisoActual, setPisoActual] = useState(1);
+  const [pisoActual, setPisoActual] = useState(0);
 
   //const { width } = useWindowDimensions();
 
@@ -74,10 +74,17 @@ export default function HomeScreen() {
     ? rutas[salaEncontrada.nombre as keyof typeof rutas]
     : null;
 
-  const imagenPiso =
-    pisoActual === 1
-      ? require("../assets/maps/piso1.png")
-      : require("../assets/maps/piso2.png");
+  const imagenesPisos = {
+    0: require("../assets/maps/zocalo.png"),
+    1: require("../assets/maps/piso1.png"),
+    2: require("../assets/maps/piso2.png"),
+    3: require("../assets/maps/piso3.png"),
+    4: require("../assets/maps/piso4.png"),
+  };
+
+const imagenPiso =
+  imagenesPisos[pisoActual as keyof typeof imagenesPisos];
+      
 
   return (
     <View style={styles.container}>
