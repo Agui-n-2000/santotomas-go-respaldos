@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import {
   Image,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -14,6 +13,11 @@ import { ResumableZoom } from "react-native-zoom-toolkit";
 
 import Svg, { Circle, Line, Text as SvgText } from "react-native-svg";
 
+import { Dimensions } from "react-native";
+
+import { TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+
 import { rutas } from "../data/rutasPersonalizadas";
 import { salas } from "../data/salas";
 
@@ -22,7 +26,7 @@ export default function HomeScreen() {
 
   const [pisoActual, setPisoActual] = useState(1);
 
-  const { width } = useWindowDimensions();
+  //const { width } = useWindowDimensions();
 
   /*
     TAMAÑO ORIGINAL DEL PLANO
@@ -33,7 +37,12 @@ export default function HomeScreen() {
   /*
     TAMAÑO RESPONSIVE
   */
-  const viewportHeight = Math.min(width * 1.1, 450);
+  // const viewportHeight = Math.min(width * 1.1, 450);
+  
+
+  const screenHeight = Dimensions.get("window").height;
+
+  const viewportHeight = screenHeight;
 
   const mapHeight = viewportHeight;
 
@@ -45,6 +54,12 @@ export default function HomeScreen() {
   const scaleX = mapWidth / MAP_WIDTH;
 
   const scaleY = mapHeight / MAP_HEIGHT;
+
+  /* 
+    Drawer Izquierdo
+  */
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [floorVisible, setFloorVisible] = useState(false);
 
   /*
     BUSQUEDA
@@ -65,48 +80,94 @@ export default function HomeScreen() {
       : require("../assets/maps/piso2.png");
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      nestedScrollEnabled={true}
-    >
-      <Text style={styles.title}>Indoor GIS IPST</Text>
+    <View style={styles.container}>
 
-      <Text style={styles.subtitle}>
-        Sistema de orientación de salas, laboratorios y servicios del IPST
-      </Text>
-
-      <TextInput
-        placeholder="Buscar sala"
-        style={styles.input}
-        value={busqueda}
-        onChangeText={setBusqueda}
-      />
-      <View style={styles.floorContainer}>
-        <Text
-          style={[
-            styles.floorButton,
-            pisoActual === 1 && styles.floorButtonActive,
-          ]}
-          onPress={() => setPisoActual(1)}
-        >
-          Piso 1
-        </Text>
-
-        <Text
-          style={[
-            styles.floorButton,
-            pisoActual === 2 && styles.floorButtonActive,
-          ]}
-          onPress={() => setPisoActual(2)}
-        >
-          Piso 2
-        </Text>
-      </View>
-      {/* MAPA */}
       <View style={styles.mapViewport}>
+
+        {/* BOTONES FLOTANTES */}
+        <View style={styles.topButtons}>
+
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => setMenuVisible(!menuVisible)}
+          >
+            <Ionicons name="menu" size={35} color="#f5a000" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => setFloorVisible(!floorVisible)}
+          >
+            <Ionicons
+              name="swap-horizontal"
+              size={35}
+              color="#007bff"
+            />
+          </TouchableOpacity>
+
+        </View>
+
+        {/* MENÚ IZQUIERDO */}
+        {menuVisible && (
+          <View style={styles.drawerMenu}>
+
+            <TextInput
+              placeholder="Buscar sala"
+              style={styles.drawerInput}
+              value={busqueda}
+              onChangeText={setBusqueda}
+            />
+
+            <Text style={styles.drawerTitle}>
+              Puntos de interés
+            </Text>
+
+            <Text style={styles.drawerItem}>Casino</Text>
+
+            <Text style={styles.drawerItem}>Baños</Text>
+
+            <Text style={styles.drawerItem}>Información</Text>
+
+            <Text style={styles.drawerItem}>Biblioteca</Text>
+
+            <Text style={styles.drawerItem}>Enfermería</Text>
+
+            <Text style={styles.drawerItem}>DAE</Text>
+
+          </View>
+        )}
+
+        {/* MENÚ DE PISOS */}
+        {floorVisible && (
+          <View style={styles.floorDrawer}>
+
+            {[
+              "Zócalo",
+              "Piso 1",
+              "Piso 2",
+              "Piso 3",
+              "Piso 4",
+            ].map((piso, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => {
+                  setPisoActual(index);
+                  setFloorVisible(false);
+                }}
+              >
+                <Text style={styles.floorItem}>
+                  {piso}
+                </Text>
+              </TouchableOpacity>
+            ))}
+
+          </View>
+        )}
+
+        {/* MAPA CON ZOOM */}
         <ResumableZoom
           maxScale={4}
-          minScale={1}          
+          minScale={1}
         >
           <View
             style={[
@@ -117,86 +178,84 @@ export default function HomeScreen() {
               },
             ]}
           >
-          {/* Plano */}
-          {
+
+            {/* PLANO */}
             <Image
               source={imagenPiso}
               style={styles.map}
               resizeMode="contain"
             />
-          }
 
-          {/* Capa SVG */}
-          <Svg width={mapWidth} height={mapHeight} style={styles.svgOverlay}>
-            {/* RUTA */}
-            {ruta &&
-              ruta.slice(0, -1).map((punto, index) => {
-                const siguiente = ruta[index + 1];
-
-                return (
-                  <Line
-                    key={index}
-                    x1={punto.x * scaleX}
-                    y1={punto.y * scaleY}
-                    x2={siguiente.x * scaleX}
-                    y2={siguiente.y * scaleY}
-                    stroke="#0066ff"
-                    strokeWidth="5"
-                    strokeLinecap="round"
-                  />
-                );
-              })}
-
-            {/* PUNTOS DE LA RUTA */}
-            {ruta &&
-              ruta.map((punto, index) => (
-                <Circle
-                  key={index}
-                  cx={punto.x * scaleX}
-                  cy={punto.y * scaleY}
-                  r="10"
-                  fill="#ff3333"
-                />
-              ))}
-
-            {/* USTED ESTÁ AQUÍ */}
-            <Circle
-              cx={550 * scaleX}
-              cy={2000 * scaleY}
-              r="20"
-              fill="#00cc44"
-            />
-
-            <SvgText
-              x={475 * scaleX}
-              y={2040 * scaleY}
-              fontSize={(25 * (scaleX + scaleY)) / 2}
-              fill="#00cc44"
-              fontWeight="bold"
+            {/* CAPA SVG */}
+            <Svg
+              width={mapWidth}
+              height={mapHeight}
+              style={styles.svgOverlay}
             >
-              Usted está aquí
-            </SvgText>
-          </Svg>
+
+              {/* RUTA */}
+              {ruta &&
+                ruta.slice(0, -1).map((punto, index) => {
+                  const siguiente = ruta[index + 1];
+
+                  return (
+                    <Line
+                      key={index}
+                      x1={punto.x * scaleX}
+                      y1={punto.y * scaleY}
+                      x2={siguiente.x * scaleX}
+                      y2={siguiente.y * scaleY}
+                      stroke="#0066ff"
+                      strokeWidth="5"
+                      strokeLinecap="round"
+                    />
+                  );
+                })}
+
+              {/* PUNTOS */}
+              {ruta &&
+                ruta.map((punto, index) => (
+                  <Circle
+                    key={index}
+                    cx={punto.x * scaleX}
+                    cy={punto.y * scaleY}
+                    r="10"
+                    fill="#ff3333"
+                  />
+                ))}
+
+              {/* USTED ESTÁ AQUÍ */}
+              <Circle
+                cx={550 * scaleX}
+                cy={2000 * scaleY}
+                r="8"
+                fill="#00cc44"
+              />
+
+              <SvgText
+                x={475 * scaleX}
+                y={2040 * scaleY}
+                fontSize={(25 * (scaleX + scaleY)) / 2}
+                fill="#00cc44"
+                fontWeight="bold"
+              >
+                Usted está aquí
+              </SvgText>
+
+            </Svg>
+
           </View>
         </ResumableZoom>
-      </View>
-      
 
-      {/* TEXTO */}
-      {/* <Text style={styles.routeText}>
-        {busqueda.length === 0
-          ? "Busca ejemplo: 103, DAE o Biblioteca"
-          : salaEncontrada
-            ? `Destino: ${salaEncontrada.nombre}`
-            : "Sala no encontrada"}
-      </Text> */}
-    </ScrollView>
+      </View>
+
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     alignItems: "center",
     backgroundColor: "#f5f5f5",
     paddingTop: 40,
@@ -226,23 +285,90 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
- mapViewport: {
-  width: "95%",
-  height: 450,
-  backgroundColor: "#fff",
-  borderRadius: 20,
-  overflow: "hidden",
-  marginVertical: 20,
-},
+  mapViewport: {
+    width: "100%",
+    //height: 740,
+    flex: 1,
+    position: "relative",
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    overflow: "hidden",
+    marginVertical: 20,
+  },
 
-mapContainer: {
-  position: "relative",
-},
-map: {
-  width: "100%",
-  height: "100%",
-  position: "absolute",
-},
+  mapContainer: {
+    position: "relative",
+  },
+  map: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+  },
+  topButtons: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    right: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    zIndex: 100,
+  },
+
+  iconButton: {
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 30,
+    elevation: 5,
+  },
+
+  drawerMenu: {
+    position: "absolute",
+    top: 110,
+    left: 0,
+    width: 260,
+    height: "100%",
+    backgroundColor: "#ffffff",
+    padding: 20,
+    zIndex: 99,
+    elevation: 10,
+  },
+
+  floorDrawer: {
+    position: "absolute",
+    top: 110,
+    right: 20,
+    width: 150,
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    padding: 10,
+    zIndex: 99,
+    elevation: 10,
+  },
+
+  drawerInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 20,
+  },
+
+  drawerTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 15,
+  },
+
+  drawerItem: {
+    fontSize: 16,
+    paddingVertical: 12,
+  },
+
+  floorItem: {
+    fontSize: 16,
+    textAlign: "center",
+    paddingVertical: 12,
+  },
 
   svgOverlay: {
     position: "absolute",
