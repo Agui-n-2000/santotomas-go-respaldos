@@ -177,8 +177,14 @@ export default function MapaScreen() {
 
             <Text style={styles.drawerTitle}>Puntos de interés</Text>
 
-            <TouchableOpacity onPress={() => setBusqueda("Casino")}>
-              <Text style={styles.drawerItem}>Casino</Text>
+            <TouchableOpacity
+                onPress={() => {
+                    setBusqueda("Casino");
+                    setMenuVisible(false);
+                    setPisoActual(1);
+                }}
+            >
+                <Text style={styles.drawerItem}>Casino</Text>
             </TouchableOpacity>
 
             <Text style={styles.drawerItem}>Baños</Text>
