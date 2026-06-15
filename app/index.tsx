@@ -1,261 +1,45 @@
-import { useState } from "react";
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useRouter } from "expo-router";
 
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TextInput,
-  useWindowDimensions,
-  View,
-} from "react-native";
-
-import { ResumableZoom } from "react-native-zoom-toolkit";
-
-import Svg, { Circle, Line, Text as SvgText } from "react-native-svg";
-
-import { Dimensions } from "react-native";
-
-import { TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-
-import { rutas } from "../data/rutasPersonalizadas";
-import { salas } from "../data/salas";
-
-export default function HomeScreen() {
-  const [busqueda, setBusqueda] = useState("");
-
-  const [pisoActual, setPisoActual] = useState(0);
-
-  //const { width } = useWindowDimensions();
-
-  /*
-    TAMAÑO ORIGINAL DEL PLANO
-  */
-  const MAP_WIDTH = 1800;
-  const MAP_HEIGHT = 2500;
-
-  /*
-    TAMAÑO RESPONSIVE
-  */
-  // const viewportHeight = Math.min(width * 1.1, 450);
-  
-
-  const screenHeight = Dimensions.get("window").height;
-
-  const viewportHeight = screenHeight;
-
-  const mapHeight = viewportHeight;
-
-  const mapWidth = mapHeight * (MAP_WIDTH / MAP_HEIGHT);
-
-  /*
-    ESCALA
-  */
-  const scaleX = mapWidth / MAP_WIDTH;
-
-  const scaleY = mapHeight / MAP_HEIGHT;
-
-  /* 
-    Drawer Izquierdo
-  */
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [floorVisible, setFloorVisible] = useState(false);
-
-  /*
-    BUSQUEDA
-  */
-  const busquedaNormalizada = busqueda.trim().toLowerCase();
-
-  const salaEncontrada = salas.find(
-    (sala) => sala.nombre.toLowerCase() === busquedaNormalizada,
-  );
-
-  const ruta = salaEncontrada
-    ? rutas[salaEncontrada.nombre as keyof typeof rutas]
-    : null;
-
-  const imagenesPisos = {
-    0: require("../assets/maps/zocalo.png"),
-    1: require("../assets/maps/piso1.png"),
-    2: require("../assets/maps/piso2.png"),
-    3: require("../assets/maps/piso3.png"),
-    4: require("../assets/maps/piso4.png"),
-  };
-
-const imagenPiso =
-  imagenesPisos[pisoActual as keyof typeof imagenesPisos];
-      
+export default function InicioScreen() {
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
+      <ImageBackground
+        source={require("../assets/images/santotomas.png")}
+        style={styles.background}
+        resizeMode="cover"
+      >
+        <View style={styles.overlay}>
+          <View style={styles.header}>
+            <View style={styles.logoRow}>
+              <Text style={styles.title}>Santo{"\n"}Tomás</Text>
+              <Text style={styles.go}>GO</Text>
+            </View>
 
-      <View style={styles.mapViewport}>
-
-        {/* BOTONES FLOTANTES */}
-        <View style={styles.topButtons}>
-
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => setMenuVisible(!menuVisible)}
-          >
-            <Ionicons name="menu" size={35} color="#f5a000" />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => setFloorVisible(!floorVisible)}
-          >
-            <Ionicons
-              name="swap-horizontal"
-              size={35}
-              color="#007bff"
-            />
-          </TouchableOpacity>
-
-        </View>
-
-        {/* MENÚ IZQUIERDO */}
-        {menuVisible && (
-          <View style={styles.drawerMenu}>
-
-            <TextInput
-              placeholder="Buscar sala"
-              style={styles.drawerInput}
-              value={busqueda}
-              onChangeText={setBusqueda}
-            />
-
-            <Text style={styles.drawerTitle}>
-              Puntos de interés
+            <Text style={styles.subtitle}>
+              Explora tu sede{"\n"}de forma interactiva
             </Text>
-
-            <Text style={styles.drawerItem}>Casino</Text>
-
-            <Text style={styles.drawerItem}>Baños</Text>
-
-            <Text style={styles.drawerItem}>Información</Text>
-
-            <Text style={styles.drawerItem}>Biblioteca</Text>
-
-            <Text style={styles.drawerItem}>Enfermería</Text>
-
-            <Text style={styles.drawerItem}>DAE</Text>
-
           </View>
-        )}
 
-        {/* MENÚ DE PISOS */}
-        {floorVisible && (
-          <View style={styles.floorDrawer}>
-
-            {[
-              "Zócalo",
-              "Piso 1",
-              "Piso 2",
-              "Piso 3",
-              "Piso 4",
-            ].map((piso, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  setPisoActual(index);
-                  setFloorVisible(false);
-                }}
-              >
-                <Text style={styles.floorItem}>
-                  {piso}
-                </Text>
-              </TouchableOpacity>
-            ))}
-
-          </View>
-        )}
-
-        {/* MAPA CON ZOOM */}
-        <ResumableZoom
-          maxScale={4}
-          minScale={1}
-        >
-          <View
-            style={[
-              styles.mapContainer,
-              {
-                width: mapWidth,
-                height: mapHeight,
-              },
-            ]}
-          >
-
-            {/* PLANO */}
-            <Image
-              source={imagenPiso}
-              style={styles.map}
-              resizeMode="contain"
-            />
-
-            {/* CAPA SVG */}
-            <Svg
-              width={mapWidth}
-              height={mapHeight}
-              style={styles.svgOverlay}
+          <View style={styles.buttons}>
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={() => router.push("/mapa?recorrido=true")}
             >
+              <Text style={styles.primaryText}>Comenzar recorrido</Text>
+            </TouchableOpacity>
 
-              {/* RUTA */}
-              {ruta &&
-                ruta.slice(0, -1).map((punto, index) => {
-                  const siguiente = ruta[index + 1];
-
-                  return (
-                    <Line
-                      key={index}
-                      x1={punto.x * scaleX}
-                      y1={punto.y * scaleY}
-                      x2={siguiente.x * scaleX}
-                      y2={siguiente.y * scaleY}
-                      stroke="#0066ff"
-                      strokeWidth="5"
-                      strokeLinecap="round"
-                    />
-                  );
-                })}
-
-              {/* PUNTOS */}
-              {ruta &&
-                ruta.map((punto, index) => (
-                  <Circle
-                    key={index}
-                    cx={punto.x * scaleX}
-                    cy={punto.y * scaleY}
-                    r="10"
-                    fill="#ff3333"
-                  />
-                ))}
-
-              {/* USTED ESTÁ AQUÍ */}
-              <Circle
-                cx={550 * scaleX}
-                cy={2000 * scaleY}
-                r="8"
-                fill="#00cc44"
-              />
-
-              <SvgText
-                x={475 * scaleX}
-                y={2040 * scaleY}
-                fontSize={(25 * (scaleX + scaleY)) / 2}
-                fill="#00cc44"
-                fontWeight="bold"
-              >
-                Usted está aquí
-              </SvgText>
-
-            </Svg>
-
+            <TouchableOpacity
+              style={styles.secondaryButton}
+              onPress={() => router.push("/mapa?recorrido=false")}
+            >
+              <Text style={styles.secondaryText}>Explorar libremente</Text>
+            </TouchableOpacity>
           </View>
-        </ResumableZoom>
-
-      </View>
-
+        </View>
+      </ImageBackground>
     </View>
   );
 }
@@ -263,172 +47,94 @@ const imagenPiso =
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#000",
+  },
+
+  background: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
+
+  overlay: {
+    flex: 1,
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingTop: 55,
+    paddingBottom: 28,
+    backgroundColor: "rgba(0,0,0,0.18)",
+  },
+
+  header: {
+    marginTop: 100,
+  },
+
+  logoRow: {
+    flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
-    paddingTop: 40,
-    paddingBottom: 50,
   },
 
   title: {
-    fontSize: 30,
-    fontWeight: "bold",
-    textAlign: "center",
+    color: "#fff",
+    fontSize: 48,
+    fontWeight: "800",
+    lineHeight: 40,
+    textShadowColor: "rgba(0,0,0,0.45)",
+    textShadowOffset: { width: 1, height: 2 },
+    textShadowRadius: 3,
+  },
+
+  go: {
+    backgroundColor: "#007A3D",
+    color: "#fff",
+    fontSize: 32,
+    fontWeight: "800",
+    paddingHorizontal: 9,
+    paddingVertical: 3,
+    borderRadius: 7,
+    marginLeft: 10,
+    marginTop: 25,
+    transform: [{ rotate: "-10deg" }],
   },
 
   subtitle: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 25,
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "700",
+    marginTop: 8,
+    lineHeight: 20,
+    textShadowColor: "rgba(0,0,0,0.45)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
 
-  input: {
-    width: "90%",
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 15,
-    padding: 15,
-    marginBottom: 25,
-    fontSize: 16,
+  buttons: {
+    gap: 14,
   },
 
-  mapViewport: {
-    width: "100%",
-    //height: 740,
-    flex: 1,
-    position: "relative",
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    overflow: "hidden",
-    marginVertical: 20,
-  },
-
-  mapContainer: {
-    position: "relative",
-  },
-  map: {
-    width: "100%",
-    height: "100%",
-    position: "absolute",
-  },
-  topButtons: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-    right: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    zIndex: 100,
-  },
-
-  iconButton: {
-    backgroundColor: "#fff",
-    padding: 10,
+  primaryButton: {
+    backgroundColor: "#00843D",
+    paddingVertical: 15,
     borderRadius: 30,
-    elevation: 5,
-  },
-
-  drawerMenu: {
-    position: "absolute",
-    top: 110,
-    left: 0,
-    width: 260,
-    height: "100%",
-    backgroundColor: "#ffffff",
-    padding: 20,
-    zIndex: 99,
-    elevation: 10,
-  },
-
-  floorDrawer: {
-    position: "absolute",
-    top: 110,
-    right: 20,
-    width: 150,
-    backgroundColor: "#fff",
-    borderRadius: 15,
-    padding: 10,
-    zIndex: 99,
-    elevation: 10,
-  },
-
-  drawerInput: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 20,
-  },
-
-  drawerTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 15,
-  },
-
-  drawerItem: {
-    fontSize: 16,
-    paddingVertical: 12,
-  },
-
-  floorItem: {
-    fontSize: 16,
-    textAlign: "center",
-    paddingVertical: 12,
-  },
-
-  svgOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-  },
-
-  routeText: {
-    marginTop: 25,
-    fontSize: 22,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  floorContainer: {
-    flexDirection: "row",
-    gap: 10,
-    marginBottom: 15,
-  },
-
-  floorButton: {
-    backgroundColor: "#ddd",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    fontWeight: "bold",
-  },
-
-  floorButtonActive: {
-    backgroundColor: "#0066ff",
-    color: "#fff",
-  },
-
-  zoomContainer: {
-    flexDirection: "row",
     alignItems: "center",
-    gap: 15,
-    marginBottom: 20,
   },
 
-  zoomButton: {
-    backgroundColor: "#0066ff",
+  primaryText: {
     color: "#fff",
-    width: 45,
-    height: 45,
-    textAlign: "center",
-    lineHeight: 45,
-    borderRadius: 25,
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: "800",
   },
 
-  zoomText: {
-    fontSize: 18,
-    fontWeight: "bold",
+  secondaryButton: {
+    backgroundColor: "#fff",
+    paddingVertical: 15,
+    borderRadius: 30,
+    alignItems: "center",
+  },
+
+  secondaryText: {
+    color: "#007A3D",
+    fontSize: 16,
+    fontWeight: "800",
   },
 });

@@ -55,7 +55,7 @@ export const salas = [
 
   {
     id: 10,
-    nombre: 'Enfermeria',
+    nombre: 'Casino',
     piso: 1,
   },
 

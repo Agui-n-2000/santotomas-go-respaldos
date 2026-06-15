@@ -1,25 +1,19 @@
 export const nodos = {
-  entrada: { x: 0.08, y: 0.72 },
+  entrada: { piso: 1, x: 550, y: 2000 },
 
-  pasillo1: { x: 0.18, y: 0.72 },
+  pasillo1: { piso: 1, x: 550, y: 1900 },
 
-  pasillo2: { x: 0.35, y: 0.65 },
+  pasillo2: { piso: 1, x: 400, y: 1900 },
 
-  dae: { x: 0.52, y: 0.55 },
+  escalera_p1: { piso: 1, x: 210, y: 1910 },
 
-  ascensor: { x: 0.68, y: 0.55 },
+  escalera_zocalo: { piso: 0, x: 510, y: 1660 },
 
-  sala101: { x: 0.84, y: 0.52 },
+  Casino: { piso: 0, x: 720, y: 1450 },
 
-  sala102: { x: 0.84, y: 0.40 },
+  Biblioteca: { piso: 1, x: 300, y: 1200 },
 
-  sala103: { x: 0.90, y: 0.30 },
+  DAE: { piso: 1, x: 600, y: 1600 },
 
-  laboratorio1: { x: 0.22, y: 0.78 },
-
-  laboratorio2: { x: 0.10, y: 0.82 },
-
-  cafeteria: { x: 0.42, y: 0.25 },
-
-  biblioteca: { x: 0.16, y: 0.18 },
+  Enfermeria: { piso: 1, x: 800, y: 1500 },
 };
