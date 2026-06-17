@@ -95,5 +95,16 @@ export const rutas = {
     { piso: 1, x: 750, y: 1260 },
         
   ],
+  'Sala de Estar': [
+    { piso: 1, x: 550, y: 2000 },
+    { piso: 1, x: 670, y: 2000 },
+    { piso: 1, x: 670, y: 2000 },
+
+    // Cambio de piso: misma escalera principal, segundo piso
+    { piso: 2, x: 650, y: 1950 },
+    { piso: 2, x: 650, y: 1880 },
+    { piso: 2, x: 580, y: 1880 },
+    { piso: 2, x: 580, y: 2100 },
+  ]
 
 };

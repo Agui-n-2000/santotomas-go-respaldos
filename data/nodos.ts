@@ -20,4 +20,8 @@ export const nodos = {
   bano_mujeres: { piso: 1, x: 300, y: 1900 },
 
   bano_hombres: { piso: 1, x: 500, y: 1900 },
+
+  Sala_de_Estar: { piso: 1, x: 210, y: 1910 },
+
+  Psicologo: { piso: 1, x: 400, y: 1700 },
 };
