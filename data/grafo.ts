@@ -11,7 +11,8 @@ export const grafo = {
   pasillo2: [
     'pasillo1',
     'pasillo3',
-    'Enfermeria',
+    'Baño Mujeres',
+    'Baño Hombres',
   ],
 
   pasillo3: [

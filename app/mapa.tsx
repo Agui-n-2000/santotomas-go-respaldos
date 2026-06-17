@@ -67,9 +67,15 @@ export default function MapaScreen() {
     4: require("../assets/maps/piso4.png"),
   };
 
-  const nombresPisos = ["Zócalo", "Piso 1", "Piso 2", "Piso 3", "Piso 4"];
+  const nombresPisos = ["Piso -1", "Piso 1", "Piso 2", "Piso 3", "Piso 4"];
 
   const imagenPiso = imagenesPisos[pisoActual as keyof typeof imagenesPisos];
+  const seleccionarRuta = (nombreRuta: string, pisoInicial = 1) => {
+  setBusqueda(nombreRuta);
+  setMenuVisible(false);
+  setFloorVisible(false);
+  setPisoActual(pisoInicial);
+};
 
   return (
     <View style={styles.container}>
@@ -175,6 +181,15 @@ export default function MapaScreen() {
               onChangeText={setBusqueda}
             />
 
+            {busqueda.length > 0 && (
+            <TouchableOpacity
+              style={styles.clearButton}
+              onPress={() => setBusqueda("")}
+            >
+              <Ionicons name="close-circle" size={22} color="#ff0000" />
+            </TouchableOpacity>
+            )}
+
             <Text style={styles.drawerTitle}>Puntos de interés</Text>
 
             <TouchableOpacity
@@ -187,12 +202,24 @@ export default function MapaScreen() {
                 <Text style={styles.drawerItem}>Casino</Text>
             </TouchableOpacity>
 
-            <Text style={styles.drawerItem}>Baños</Text>
-            <Text style={styles.drawerItem}>Información</Text>
-            <Text style={styles.drawerItem}>Biblioteca</Text>
-            <Text style={styles.drawerItem}>Enfermería</Text>
-            <Text style={styles.drawerItem}>DAE</Text>
-          </View>
+            <TouchableOpacity onPress={() => seleccionarRuta("Baño Hombres", 1)}>
+              <Text style={styles.drawerItem}>Baños Hombres</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => seleccionarRuta("Baño Mujeres", 1)}>
+              <Text style={styles.drawerItem}>Baños Mujeres</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.drawerTitle}>Información</Text>
+
+            <TouchableOpacity onPress={() => seleccionarRuta("Biblioteca", 1)}>
+              <Text style={styles.drawerItem}>Biblioteca</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => seleccionarRuta("DAE", 1)}>
+              <Text style={styles.drawerItem}>DAE</Text>
+            </TouchableOpacity>
+                      </View>
         )}
 
         {floorVisible && (
@@ -260,22 +287,26 @@ export default function MapaScreen() {
                   />
                 ))}
 
-              <Circle
-                cx={550 * scaleX}
-                cy={2000 * scaleY}
-                r="8"
-                fill="#00cc44"
-              />
+              {pisoActual === 1 && (
+                <Circle
+                  cx={550 * scaleX}
+                  cy={2000 * scaleY}
+                  r="8"
+                  fill="#00cc44"
+                />
+              )}
 
-              <SvgText
-                x={475 * scaleX}
-                y={2040 * scaleY}
-                fontSize={(25 * (scaleX + scaleY)) / 2}
-                fill="#00cc44"
-                fontWeight="bold"
-              >
-                Usted está aquí
-              </SvgText>
+              {pisoActual === 1 && (
+                <SvgText
+                  x={475 * scaleX}
+                  y={2040 * scaleY}
+                  fontSize={(25 * (scaleX + scaleY)) / 2}
+                  fill="#00cc44"
+                  fontWeight="bold"
+                >
+                  Usted está aquí
+                </SvgText>
+              )}
             </Svg>
           </View>
         </ResumableZoom>
@@ -348,12 +379,24 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
 
+  searchContainer: {
+    position: "relative",
+    marginBottom: 20,
+  },
+
   drawerInput: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 10,
     padding: 12,
-    marginBottom: 20,
+    paddingRight: 40,
+  },
+
+  clearButton: {
+    position: "absolute",
+    right: 30,
+    top: 30,
+    zIndex: 10,
   },
 
   drawerTitle: {

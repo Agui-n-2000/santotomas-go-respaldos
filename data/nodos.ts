@@ -16,4 +16,8 @@ export const nodos = {
   DAE: { piso: 1, x: 600, y: 1600 },
 
   Enfermeria: { piso: 1, x: 800, y: 1500 },
+
+  bano_mujeres: { piso: 1, x: 300, y: 1900 },
+
+  bano_hombres: { piso: 1, x: 500, y: 1900 },
 };
