@@ -59,6 +59,34 @@ export default function MapaScreen() {
 
   const rutaTieneCambioPiso = pisosRuta.length > 1;
 
+  const indicePisoRuta = rutaTieneCambioPiso
+  ? pisosRuta.indexOf(pisoActual)
+  : -1;
+
+const puedeRetrocederRuta = indicePisoRuta > 0;
+
+const puedeAvanzarRuta =
+  indicePisoRuta >= 0 && indicePisoRuta < pisosRuta.length - 1;
+
+const avanzarPisoRuta = () => {
+  if (puedeAvanzarRuta) {
+    setPisoActual(pisosRuta[indicePisoRuta + 1]);
+  }
+};
+
+const retrocederPisoRuta = () => {
+  if (puedeRetrocederRuta) {
+    setPisoActual(pisosRuta[indicePisoRuta - 1]);
+  }
+};
+
+const cancelarRuta = () => {
+  setBusqueda("");
+  setPisoActual(1);
+  setMenuVisible(false);
+  setFloorVisible(false);
+};
+
   const imagenesPisos = {
     0: require("../assets/maps/zocalo.png"),
     1: require("../assets/maps/piso1.png"),
@@ -166,9 +194,35 @@ export default function MapaScreen() {
 
         {rutaTieneCambioPiso && (
           <View style={styles.changeFloorBox}>
-            <Text style={styles.changeFloorText}>
-              Esta ruta pasa por: {pisosRuta.map((piso) => nombresPisos[piso]).join(" → ")}
+            <TouchableOpacity
+              style={[
+                styles.routeIconButton,
+                !puedeRetrocederRuta && styles.routeIconDisabled,
+              ]}
+              disabled={!puedeRetrocederRuta}
+              onPress={retrocederPisoRuta}
+            >
+              <Ionicons name="arrow-back-circle-outline" size={24} color="#fff" />
+            </TouchableOpacity>
+
+            <Text style={styles.changeFloorText} numberOfLines={1}>
+              Ruta: {pisosRuta.map((piso) => nombresPisos[piso]).join(" → ")}
             </Text>
+
+            <TouchableOpacity
+              style={[
+                styles.routeIconButton,
+                !puedeAvanzarRuta && styles.routeIconDisabled,
+              ]}
+              disabled={!puedeAvanzarRuta}
+              onPress={avanzarPisoRuta}
+            >
+              <Ionicons name="arrow-forward-circle-outline" size={24} color="#fff" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.routeCloseButton} onPress={cancelarRuta}>
+              <Ionicons name="close-circle-outline" size={24} color="#fff" />
+            </TouchableOpacity>
           </View>
         )}
 
@@ -440,14 +494,32 @@ const styles = StyleSheet.create({
     right: 20,
     backgroundColor: "#007bff",
     borderRadius: 15,
-    padding: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
     zIndex: 150,
+    elevation: 10,
+    flexDirection: "row",
+    alignItems: "center",
   },
 
   changeFloorText: {
+    flex: 1,
     color: "#fff",
     fontWeight: "bold",
     textAlign: "center",
+    fontSize: 13,
+  },
+
+  routeIconButton: {
+    paddingHorizontal: 3,
+  },
+
+  routeCloseButton: {
+    paddingLeft: 6,
+  },
+
+  routeIconDisabled: {
+    opacity: 0.35,
   },
 
   tutorialBoxWelcome: {

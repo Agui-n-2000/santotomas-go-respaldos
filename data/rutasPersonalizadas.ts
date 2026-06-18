@@ -105,6 +105,47 @@ export const rutas = {
     { piso: 2, x: 650, y: 1880 },
     { piso: 2, x: 580, y: 1880 },
     { piso: 2, x: 580, y: 2100 },
-  ]
+  ],
+
+  '219': [
+    { piso: 1, x: 550, y: 2000 },
+    { piso: 1, x: 670, y: 2000 },
+    { piso: 1, x: 670, y: 2000 },
+    { piso: 1, x: 670, y: 1900 },
+
+    // Cambio de piso: misma escalera principal, segundo piso
+    { piso: 2, x: 650, y: 1950 },
+    { piso: 2, x: 650, y: 1880 },
+    { piso: 2, x: 580, y: 1880 },
+    { piso: 2, x: 580, y: 1750 },
+    { piso: 2, x: 360, y: 1750 },
+  ],
+
+  '220': [
+    { piso: 1, x: 550, y: 2000 },
+    { piso: 1, x: 670, y: 2000 },
+    { piso: 1, x: 670, y: 2000 },
+    { piso: 1, x: 670, y: 1900 },
+
+    // Cambio de piso: misma escalera principal, segundo piso
+    { piso: 2, x: 650, y: 1950 },
+    { piso: 2, x: 650, y: 1880 },
+    { piso: 2, x: 580, y: 1880 },
+    { piso: 2, x: 580, y: 1750 },
+    { piso: 2, x: 360, y: 1750 },
+  ],
+
+  'Lab computación': [
+    { piso: 1, x: 550, y: 2000 },
+    { piso: 1, x: 670, y: 2000 },
+    { piso: 1, x: 670, y: 2000 },
+
+    // Cambio de piso: misma escalera principal, segundo piso
+    { piso: 2, x: 650, y: 1950 },
+    { piso: 2, x: 650, y: 1880 },
+    { piso: 2, x: 580, y: 1750 },
+    { piso: 2, x: 360, y: 1750 },
+  ],
+  
 
 };

@@ -87,6 +87,25 @@ export const salas = [
     id: 15,
     nombre: 'Sala de Estar',
     piso: 1,
-  }
+  },
+
+  {
+    id: 16,
+    nombre: '219',
+    piso: 2,
+  },
+
+  {
+    id: 17,
+    nombre: '220',
+    piso: 2,
+  },
+
+  {
+    id: 19,
+    nombre: 'Lab computación',
+    piso: 3,
+  },
+  
 
 ];
